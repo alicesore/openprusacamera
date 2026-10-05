@@ -1,0 +1,16 @@
+[Unit]
+Description=openprusacamera setup (apply config, QR onboarding)
+Wants=NetworkManager.service
+After=NetworkManager.service
+Before=openprusacamera.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/opt/openprusacamera
+ExecStart=/usr/bin/python3 -m openprusacamera.setup
+# QR onboarding waits for as long as it takes someone to show a code.
+TimeoutStartSec=infinity
+
+[Install]
+WantedBy=multi-user.target

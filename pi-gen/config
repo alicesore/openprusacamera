@@ -1,0 +1,15 @@
+IMG_NAME=openprusacamera
+RELEASE=trixie
+STAGE_LIST="stage0 stage1 stage2 stage-openprusacamera"
+TARGET_HOSTNAME=openprusacamera
+
+# Standard Raspberry Pi login. The console auto-logs in; SSH stays disabled.
+FIRST_USER_NAME=pi
+FIRST_USER_PASS=raspberry
+DISABLE_FIRST_BOOT_USER_RENAME=1
+ENABLE_SSH=0
+
+LOCALE_DEFAULT=en_US.UTF-8
+KEYBOARD_KEYMAP=us
+TIMEZONE_DEFAULT=UTC
+DEPLOY_COMPRESSION=xz

@@ -1,0 +1,45 @@
+# openprusacamera configuration
+# Edit this file on any computer by plugging in the SD card.
+# Lines starting with # are comments. Format is key = value.
+# Changes take effect on the next boot.
+
+# --- Prusa Connect -------------------------------------------------------
+# Paste your camera token here (the 20-character token, or the "v1...." value
+# from the QR code link). Leave empty to scan a QR code on first boot instead.
+token =
+
+# --- Camera --------------------------------------------------------------
+# csi = Raspberry Pi camera module, usb = USB webcam
+camera = csi
+# Only used when camera = usb
+usb_device = /dev/video0
+
+# Seconds between snapshots
+interval = 10
+width = 1280
+height = 720
+# 1-100
+jpeg_quality = 85
+# Rotate the image: 0, 90, 180 or 270
+rotation = 0
+
+# --- Wi-Fi (2.4 GHz, WPA2 personal) --------------------------------------
+wifi_ssid =
+wifi_password =
+# Two-letter country code, required for Wi-Fi to work
+wifi_country = US
+
+# --- Network identity ----------------------------------------------------
+hostname = openprusacamera
+# Filled in automatically on first boot. Give this to your network admin if
+# your network only allows registered devices. Do not edit.
+mac_address =
+
+# --- Debug -----------------------------------------------------------------
+# SSH is off by default. Set to true to enable it for troubleshooting.
+ssh = false
+
+# Generated once on first run and then reused. Prusa Connect locks a camera
+# token to this value, so keep it when reflashing the SD card (copy this file
+# across), and do not edit it. Clear it only if you are using a new token.
+fingerprint =

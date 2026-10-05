@@ -1,0 +1,13 @@
+[Unit]
+Description=openprusacamera Prusa Connect camera
+Wants=network-online.target openprusacamera-setup.service
+After=network-online.target openprusacamera-setup.service
+
+[Service]
+WorkingDirectory=/opt/openprusacamera
+ExecStart=/usr/bin/python3 -m openprusacamera
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

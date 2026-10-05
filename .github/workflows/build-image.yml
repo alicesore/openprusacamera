@@ -1,0 +1,28 @@
+name: Build image
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image with pi-gen
+        run: ./pi-gen/build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: openprusacamera-image
+          path: pi-gen/work/pi-gen/deploy/*.xz
+          if-no-files-found: error
+      - name: Attach image to release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "$GITHUB_REF_NAME" --generate-notes pi-gen/work/pi-gen/deploy/*.xz

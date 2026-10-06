@@ -20,7 +20,8 @@ width = 1280
 height = 720
 # 1-100
 jpeg_quality = 85
-# Rotate the image: 0, 90, 180 or 270
+# Rotate the image: 0, 90, 180 or 270. A CSI camera needs ffmpeg for 90/270
+# (sudo apt install ffmpeg); USB installs already have it.
 rotation = 0
 
 # --- Wi-Fi (2.4 GHz, WPA2 personal) --------------------------------------

@@ -78,3 +78,25 @@ def capture(cfg):
     if not jpeg.startswith(b"\xff\xd8"):
         raise CaptureError("camera did not return a JPEG image")
     return jpeg
+
+
+def capture_bmp(cfg):
+    """Grab a BMP frame for QR scanning. BMP is trivial to read without extra libraries."""
+    if cfg.camera == "usb":
+        data = _run([
+            "ffmpeg", "-loglevel", "error", "-f", "video4linux2",
+            "-video_size", f"{cfg.width}x{cfg.height}", "-ss", "1", "-i", cfg.usb_device,
+            "-frames:v", "1", "-f", "image2pipe", "-c:v", "bmp", "-",
+        ])
+    else:
+        tool = shutil.which("rpicam-still") or shutil.which("libcamera-still")
+        if not tool:
+            raise CaptureError("rpicam-still not found; install rpicam-apps")
+        data = _run([
+            tool, "--nopreview", "--timeout", "1000",
+            "--width", str(cfg.width), "--height", str(cfg.height),
+            "--encoding", "bmp", "--output", "-",
+        ])
+    if not data.startswith(b"BM"):
+        raise CaptureError("camera did not return a BMP image")
+    return data

@@ -33,6 +33,38 @@ class ParsePayload(unittest.TestCase):
         self.assertIsNone(qr.parse_payload('{"token":"abc\\ntoken=evil1234"}'))
 
 
+def make_bmp(rows, bits=24, top_down=False):
+    """Build a BMP from rows of (b, g, r) tuples; row 0 is the top of the image."""
+    width, height = len(rows[0]), len(rows)
+    step = bits // 8
+    stride = ((width * bits + 31) // 32) * 4
+    body = b""
+    for row in (rows if top_down else reversed(rows)):
+        raw = b"".join(bytes(px) + b"\xff" * (step - 3) for px in row)
+        body += raw + b"\x00" * (stride - len(raw))
+    header = (b"BM" + (54 + len(body)).to_bytes(4, "little") + b"\0\0\0\0" + (54).to_bytes(4, "little")
+              + (40).to_bytes(4, "little") + width.to_bytes(4, "little")
+              + (-height if top_down else height).to_bytes(4, "little", signed=True)
+              + (1).to_bytes(2, "little") + bits.to_bytes(2, "little") + b"\0" * 24)
+    return header + body
+
+
+class BmpToGray(unittest.TestCase):
+    ROWS = [[(0, 10, 0), (0, 20, 0), (0, 30, 0)], [(0, 40, 0), (0, 50, 0), (0, 60, 0)]]  # 3 wide: padding needed
+
+    def test_bottom_up_24bit(self):
+        self.assertEqual(qr.bmp_to_gray(make_bmp(self.ROWS)), (3, 2, bytes([10, 20, 30, 40, 50, 60])))
+
+    def test_top_down_and_32bit(self):
+        for kwargs in ({"top_down": True}, {"bits": 32}):
+            self.assertEqual(qr.bmp_to_gray(make_bmp(self.ROWS, **kwargs))[2], bytes([10, 20, 30, 40, 50, 60]))
+
+    def test_rejects_bad_input(self):
+        for bad in (b"not a bmp", make_bmp(self.ROWS)[:-3]):
+            with self.assertRaises(ValueError):
+                qr.bmp_to_gray(bad)
+
+
 class Config(unittest.TestCase):
     def setUp(self):
         self.path = os.path.join(tempfile.mkdtemp(), "c.txt")

@@ -6,12 +6,17 @@ import json
 import logging
 import re
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from urllib.parse import parse_qs, urlparse
 
 from .capture import CaptureError, capture_bmp
 
 log = logging.getLogger("openprusacamera.qr")
+
+# Scan small and slowly: a QR code decodes fine at 640x480, and hammering the camera
+# in a tight loop is hard on a Pi Zero W with 512 MB of RAM.
+SCAN_WIDTH, SCAN_HEIGHT = 640, 480
+SCAN_PAUSE = 3
 
 TOKEN_RE = re.compile(r"^[A-Za-z0-9._-]{8,128}$")
 CONTROL_RE = re.compile(r"[\x00-\x1f\x7f]")
@@ -155,8 +160,10 @@ def decode(bmp):
 
 
 def scan_once(cfg):
+    """Grab one small frame, look for a Prusa QR code, then pause before the next try."""
+    small = replace(cfg, width=SCAN_WIDTH, height=SCAN_HEIGHT)
     try:
-        lines = decode(capture_bmp(cfg))
+        lines = decode(capture_bmp(small))
     except CaptureError as e:
         log.error("QR scan failed: %s", e)
         time.sleep(5)
@@ -166,4 +173,5 @@ def scan_once(cfg):
         if payload:
             return payload
         log.info("Ignoring a QR code that is not a Prusa Connect code")
+    time.sleep(SCAN_PAUSE)
     return None

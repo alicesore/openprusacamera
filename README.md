@@ -18,10 +18,7 @@ The installer enables console auto-login, installs the services and turns SSH **
 
 ## Connecting to Prusa Connect
 
-Pick one:
-- Put the camera token in `token =` in the config file.
-- Leave it empty and, on boot, show the camera a Prusa Connect QR code. Both the Wi-Fi + token JSON
-  code and the `camera-service-webcam.prusa3d.com/#t=...` link code are understood.
+Put the camera token from Prusa Connect in `token =` in the config file (see below), then reboot.
 
 ## Config file
 

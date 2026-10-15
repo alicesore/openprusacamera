@@ -1,4 +1,4 @@
-"""Apply the boot-partition config to the system, then onboard via QR if needed.
+"""Apply the boot-partition config to the system.
 
 Runs on every boot before the camera service. The config file is the source of
 truth, so settings edited on the SD card take effect on the next boot.
@@ -12,7 +12,6 @@ import sys
 import time
 
 from . import config as config_mod
-from . import qr
 
 log = logging.getLogger("openprusacamera.setup")
 
@@ -88,25 +87,6 @@ def apply_wifi(cfg):
         run(["nmcli", "connection", "up", CONNECTION])
 
 
-def onboard(path, scan=qr.scan_once):
-    """Block until a token is in the config, scanning for a QR code if needed."""
-    while True:
-        cfg = config_mod.load(path)
-        if cfg.token:
-            return cfg
-        log.info("No token set. Show a Prusa Connect QR code to the camera.")
-        payload = scan(cfg)
-        if not payload:
-            continue
-        changes = {"token": payload.token}
-        if payload.ssid:
-            changes.update(wifi_ssid=payload.ssid, wifi_password=payload.password)
-        config_mod.update(path, changes)
-        log.info("Token received from QR code")
-        if payload.ssid:
-            apply_wifi(config_mod.load(path))
-
-
 def main():
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     path = config_mod.default_path()
@@ -120,7 +100,8 @@ def main():
     apply_hostname(cfg)
     apply_ssh(cfg)
     apply_wifi(cfg)
-    onboard(path)
+    if not cfg.token:
+        log.warning("No token set in %s; add the camera token from Prusa Connect", path)
 
 
 if __name__ == "__main__":

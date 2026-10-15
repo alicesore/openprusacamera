@@ -4,8 +4,7 @@
 # Changes take effect on the next boot.
 
 # --- Prusa Connect -------------------------------------------------------
-# Paste your camera token here (the 20-character token, or the "v1...." value
-# from the QR code link). Leave empty to scan a QR code on first boot instead.
+# Paste your camera token here (the 20-character token from Prusa Connect).
 token =
 
 # --- Camera --------------------------------------------------------------

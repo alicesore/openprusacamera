@@ -55,9 +55,8 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update
 sync
 
-step "Installing python3 and the QR decoder (libzbar)"
+step "Installing python3"
 install_pkgs python3
-install_pkgs libzbar0t64 || install_pkgs libzbar0
 
 step "Installing camera tools"
 install_pkgs rpicam-apps-lite || install_pkgs libcamera-apps-lite
@@ -98,7 +97,7 @@ systemctl daemon-reload || true
 systemctl enable openprusacamera-setup.service openprusacamera.service
 
 echo
-echo "Installed. Edit $CONFIG (token, Wi-Fi, camera) or show a Prusa Connect QR code to the camera."
+echo "Installed. Edit $CONFIG (token, Wi-Fi, camera)."
 if [ "$SSH" = false ]; then
     echo "SSH will be DISABLED at next boot. Re-run with --ssh, or set 'ssh = true' in the config, to keep it."
     [ -z "${SSH_CONNECTION:-}" ] || echo "WARNING: you are connected over SSH and will be locked out after reboot."
